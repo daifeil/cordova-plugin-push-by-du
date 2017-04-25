@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:amazon="http://schemas.android.com/apk/lib/com.amazon.device.ads" xmlns:rim="http://www.blackberry.com/ns/widgets" id="cordova-plugin-push-by-du" version="1.8.4">
+  <name>PushByDu</name>
+  <description>
+	</description>
+  <license>MIT</license>
+  <js-module src="www/push-by-du.js" name="PushByDu">
+    <clobbers target="PushBaiDu"/>
+  </js-module>
+  <platform name="android">
+<!--     <hook type="after_plugin_add" src="scripts/android-install.js" />
+    <hook type="after_plugin_install" src="scripts/android-install.js" />
+    <hook type="before_plugin_rm" src="scripts/android-install.js" />
+    <hook type="before_plugin_uninstall" src="scripts/android-install.js" /> -->
+
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="PushByDu">
+        <param name="android-package" value="com.cordova.plugins.push.by.du.BaiduPush" />
+      </feature>
+    </config-file>
+
+    <config-file target="AndroidManifest.xml" parent="/*">
+      <!-- Push service 运行需要的权限 -->
+      <uses-permission android:name="android.permission.INTERNET" />
+      <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+      <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+      <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+      <uses-permission android:name="android.permission.VIBRATE" />
+      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+      <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER" />
+      <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+      <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+      <!-- 富媒体需要声明的权限 -->
+      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+      <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+      <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+
+      <!-- 适配Android N系统必需的ContentProvider写权限声明，写权限包含应用包名-->
+      <uses-permission android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.$PACKAGE_NAME" />
+      <permission
+          android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.$PACKAGE_NAME"
+          android:protectionLevel="normal">
+      </permission>
+    </config-file>
+
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+        <!-- push应用定义消息receiver声明 -->
+        <receiver android:name="com.cordova.plugins.push.by.du.BaiduPushReceiver" >
+            <intent-filter>
+
+                <!-- 接收push消息 -->
+                <action android:name="com.baidu.android.pushservice.action.MESSAGE" />
+                <!-- 接收bind,unbind,fetch,delete等反馈消息 -->
+                <action android:name="com.baidu.android.pushservice.action.RECEIVE" />
+                <action android:name="com.baidu.android.pushservice.action.notification.CLICK" />
+            </intent-filter>
+        </receiver>
+
+        <!-- push必须的receviver和service声明 -->
+        <receiver
+            android:name="com.baidu.android.pushservice.PushServiceReceiver"
+            android:process=":bdservice_v1" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="com.baidu.android.pushservice.action.notification.SHOW" />
+                <action android:name="com.baidu.android.pushservice.action.media.CLICK" />
+                <!-- 以下四项为可选的action声明，可大大提高service存活率和消息到达速度 -->
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.baidu.android.pushservice.RegistrationReceiver"
+            android:process=":bdservice_v1" >
+            <intent-filter>
+                <action android:name="com.baidu.android.pushservice.action.METHOD" />
+                <action android:name="com.baidu.android.pushservice.action.BIND_SYNC" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.baidu.android.pushservice.PushService"
+            android:exported="true"
+            android:process=":bdservice_v1" >
+            <intent-filter>
+                <action android:name="com.baidu.android.pushservice.action.PUSH_SERVICE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.baidu.android.pushservice.CommandService"
+            android:exported="true" />
+
+        <!-- 适配Android N系统必需的ContentProvider声明，写权限包含应用包名-->
+        <provider
+            android:name="com.baidu.android.pushservice.PushInfoProvider"
+            android:authorities="$PACKAGE_NAME.bdpush"
+            android:writePermission="baidu.push.permission.WRITE_PUSHINFOPROVIDER.$PACKAGE_NAME"
+            android:protectionLevel = "signature"
+            android:exported="true" />
+
+    </config-file>
+
+    <source-file src="src/android/BaiduPush.java" target-dir="src/com/cordova/plugins/push/by/du" />
+    <source-file src="src/android/BaiduPushReceiver.java" target-dir="src/com/cordova/plugins/push/by/du" />
+    <source-file src="src/android/libs/arm64-v8a/libbdpush_V2_7.so" target-dir="libs/arm64-v8a" />
+    <source-file src="src/android/libs/armeabi/libbdpush_V2_7.so" target-dir="libs/armeabi" />
+    <source-file src="src/android/libs/armeabi-v7a/libbdpush_V2_7.so" target-dir="libs/armeabi-v7a" />
+    <source-file src="src/android/libs/mips/libbdpush_V2_7.so" target-dir="libs/mips" />
+    <source-file src="src/android/libs/mips64/libbdpush_V2_7.so" target-dir="libs/mips64" />
+    <source-file src="src/android/libs/x86/libbdpush_V2_7.so" target-dir="libs/x86" />
+    <source-file src="src/android/libs/x86_64/libbdpush_V2_7.so" target-dir="libs/x86_64" />
+    <source-file src="src/android/libs/pushservice-5.5.0.50.jar" target-dir="libs" />
+  </platform>  
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="PushByDu">
+        <param name="ios-package" value="CDVPushByDu"/>
+      </feature>
+    </config-file>
+    <config-file target="*-Info.plist" parent="UIBackgroundModes">
+      <array>
+        <string>remote-notification</string>
+      </array>
+    </config-file>
+    <source-file src="src/ios/AppDelegate+by_du_push.m"/>
+    <source-file src="src/ios/CDVPushByDu.m"/>
+    <header-file src="src/ios/AppDelegate+by_du_push.h"/>
+    <header-file src="src/ios/CDVPushByDu.h"/>
+    <header-file target-dir="LibPush" src="src/ios/LibPush/BPush.h"/>
+    <source-file target-dir="LibPush" src="src/ios/LibPush/libBPush.a" framework="true"/>
+    <resource-file target-dir="LibPush" src="src/ios/LibPush/BPushCerResource.bundle" />
+      <framework src="libz.dylib" />
+      <framework src="Foundation.framework" />
+      <framework src="CoreTelephony.framework" />
+      <framework src="SystemConfiguration.framework" />
+  </platform>
+</plugin>
