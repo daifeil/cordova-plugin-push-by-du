@@ -37,6 +37,7 @@ require('cordova/channel').onCordovaReady.subscribe(function() {
 			PushByDu.prototype.channelId = message.data.channelId;
 			PushByDu.prototype.userId = message.data.userId;
 			PushByDu.prototype.appId = message.data.appId;
+			cordova.fireDocumentEvent('onBind',{message:message});
 		}else{
 			//PushByDu.prototype.onMessage(message);
 			cordova.fireDocumentEvent('onBaiduMessage',{message:message});
