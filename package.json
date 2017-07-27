@@ -1,0 +1,23 @@
+{
+  "name": "cordova-plugin-push-by-du",
+  "version": "1.0.0",
+  "description": "cordova baidu push plugin ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/todaynowork/cordova-plugin-push-by-du.git"
+  },
+  "keywords": [
+    "baidu",
+    "push"
+  ],
+  "author": "duzhiguo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/todaynowork/cordova-plugin-push-by-du/issues"
+  },
+  "homepage": "https://github.com/todaynowork/cordova-plugin-push-by-du#readme"
+}
